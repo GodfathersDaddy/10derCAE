@@ -1,0 +1,4 @@
+CAD Icon Set 2.0 by the CAD Icon Set authors. Original terms: CC BY-NC-SA 4.0.
+License holder declared by user: Jonathan Schinnerl.
+User authorized use in 10derCAD on 2026-10-12. Original terms are retained; this notice records the user declaration and does not replace the original license text.
+Unmodified light/dark SVG sources embedded in the app. Rendered at DPI-dependent sizes. Generator code not incorporated.

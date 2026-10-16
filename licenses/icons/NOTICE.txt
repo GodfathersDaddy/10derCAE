@@ -1,0 +1,4 @@
+Original CAD Icons v3 (3.0.0). New drawings released under CC0 1.0 Universal.
+Source in this workspace: 10derCAD/assets/icons/cad-icons-v3
+https://creativecommons.org/publicdomain/zero/1.0/legalcode
+

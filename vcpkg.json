@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "tendercae",
+  "version-semver": "0.2.0",
+  "description": "Native, non-commercial CAD/CAE user-interface shell for Windows",
+  "dependencies": [
+    { "name": "qtbase", "default-features": false, "features": ["gui", "widgets", "testlib"] },
+    "qtsvg",
+    "opencascade"
+  ]
+}
+

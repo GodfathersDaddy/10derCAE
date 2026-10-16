@@ -1,0 +1,19 @@
+<RCC>
+  <qresource prefix="/icons">
+    <file alias="file-open.svg">icons/file-open.svg</file>
+    <file alias="file-save.svg">icons/file-save.svg</file>
+    <file alias="file-export.svg">icons/file-export.svg</file>
+    <file alias="edit-undo.svg">icons/edit-undo.svg</file>
+    <file alias="edit-redo.svg">icons/edit-redo.svg</file>
+    <file alias="sketch-create.svg">icons/sketch-create.svg</file>
+    <file alias="extrude.svg">icons/extrude.svg</file>
+    <file alias="revolve.svg">icons/revolve.svg</file>
+    <file alias="hole.svg">icons/hole.svg</file>
+    <file alias="fillet.svg">icons/fillet.svg</file>
+    <file alias="chamfer.svg">icons/chamfer.svg</file>
+    <file alias="component-insert.svg">icons/component-insert.svg</file>
+    <file alias="dimension.svg">icons/dimension.svg</file>
+    <file alias="view-home.svg">icons/view-home.svg</file>
+  </qresource>
+</RCC>
+
