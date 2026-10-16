@@ -40,6 +40,7 @@ private:
 
     QHBoxLayout* m_headerLayout = nullptr;
     QToolButton* m_fileButton = nullptr;
+    QToolButton* m_startButton = nullptr;
     QToolButton* m_undoButton = nullptr;
     QToolButton* m_redoButton = nullptr;
     QComboBox* m_language = nullptr;

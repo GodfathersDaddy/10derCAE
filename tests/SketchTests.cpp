@@ -152,5 +152,15 @@ int main() {
     const QString equalA = equalCircles.addCircle({0, 0}, 5);
     const QString equalB = equalCircles.addCircle({4, 0}, 5);
     if (!equalCircles.addConstraint(SketchConstraintType::InternalTangent, equalA, equalB).isEmpty()) return 32;
+    SketchModel diagnostics;
+    const QString lockedLine = diagnostics.addLine({0, 0}, {10, 0});
+    const QString lock = diagnostics.addConstraint(SketchConstraintType::Fixed, lockedLine);
+    const QString vertical = diagnostics.addConstraint(SketchConstraintType::Vertical, lockedLine);
+    const auto failed = diagnostics.solve();
+    if (failed.state != SketchSolveState::OverConstrained || !failed.unsatisfiedConstraintIds.contains(vertical)
+        || !failed.message.contains(vertical)) return 33;
+    if (!diagnostics.removeConstraint(lock) || diagnostics.entities()[0].fixed) return 34;
+    const auto recovered = diagnostics.solve();
+    if (recovered.state == SketchSolveState::OverConstrained || !recovered.unsatisfiedConstraintIds.isEmpty()) return 35;
     return 0;
 }

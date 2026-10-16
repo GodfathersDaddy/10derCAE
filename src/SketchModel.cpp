@@ -191,14 +191,22 @@ bool SketchModel::removeEntity(const QString& id) {
 bool SketchModel::removeConstraint(const QString& id) {
     const auto before = m_constraints.size();
     m_constraints.erase(std::remove_if(m_constraints.begin(), m_constraints.end(), [&](const auto& item) { return item.id == id; }), m_constraints.end());
+    for (auto& entity : m_entities)
+        entity.fixed = std::any_of(m_constraints.cbegin(), m_constraints.cend(), [&](const SketchConstraint& constraint) {
+            return constraint.type == SketchConstraintType::Fixed && constraint.entityA == entity.id;
+        });
     return before != m_constraints.size();
 }
 
 SketchSolveResult SketchModel::solve(int maximumIterations, double tolerance) {
     double residual = 0.0;
+    QStringList unsatisfied;
     for (int iteration = 0; iteration < maximumIterations; ++iteration) {
         residual = 0.0;
+        double iterationResidual = 0.0;
+        unsatisfied.clear();
         for (const auto& constraint : m_constraints) {
+            residual = 0.0;
             auto* a = findEntity(constraint.entityA);
             auto* b = findEntity(constraint.entityB);
             auto* c = findEntity(constraint.entityC);
@@ -321,14 +329,18 @@ SketchSolveResult SketchModel::solve(int maximumIterations, double tolerance) {
                 break;
             case SketchConstraintType::Fixed: break;
             }
+            iterationResidual = std::max(iterationResidual, residual);
+            if (residual > tolerance) unsatisfied.push_back(constraint.id);
         }
+        residual = iterationResidual;
         if (residual <= tolerance) break;
     }
     const int dof = estimateDegreesOfFreedom();
     SketchSolveResult result;
     result.maximumResidual = residual;
+    result.unsatisfiedConstraintIds = unsatisfied;
     result.degreesOfFreedom = std::max(0, dof);
-    if (residual > tolerance) { result.state = SketchSolveState::OverConstrained; result.message = QStringLiteral("Conflicting constraints"); }
+    if (residual > tolerance) { result.state = SketchSolveState::OverConstrained; result.message = QStringLiteral("Unsatisfied constraints: %1").arg(unsatisfied.join(QStringLiteral(", "))); }
     else if (dof <= 0) { result.state = SketchSolveState::FullyConstrained; result.message = QStringLiteral("Fully constrained"); }
     else { result.state = SketchSolveState::UnderConstrained; result.message = QStringLiteral("%1 degrees of freedom").arg(dof); }
     return result;

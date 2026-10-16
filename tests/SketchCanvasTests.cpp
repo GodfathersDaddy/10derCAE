@@ -1,9 +1,11 @@
 #include "SketchCanvas.h"
+#include "RibbonWidget.h"
 
 #include <QApplication>
 #include <QGraphicsItem>
 #include <QKeyEvent>
 #include <QMouseEvent>
+#include <QToolButton>
 #include <cstdlib>
 
 namespace {
@@ -33,6 +35,17 @@ void middleDrag(QWidget* target, const QPoint& from, const QPoint& to) {
 
 int main(int argc, char** argv) {
     QApplication application(argc, argv);
+    RibbonWidget ribbon;
+    ribbon.setWorkspace(WorkspaceId::Part);
+    auto* start = ribbon.findChild<QToolButton*>(QStringLiteral("startButton"));
+    if (!start) std::_Exit(16);
+    int startChanges = 0;
+    QObject::connect(&ribbon, &RibbonWidget::workspaceChanged, [&](WorkspaceId workspace) {
+        if (workspace == WorkspaceId::Start) ++startChanges;
+    });
+    start->click();
+    start->click();
+    if (ribbon.workspace() != WorkspaceId::Start || startChanges != 1) std::_Exit(17);
     SketchCanvas canvas;
     canvas.resize(800, 600);
 

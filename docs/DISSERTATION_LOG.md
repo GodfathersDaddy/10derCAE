@@ -40,6 +40,14 @@ Qt-Selektionsreihenfolge keine unterschiedlichen gültigen Spiegelresultate erze
 
 ## Projektziel
 
+Entwicklung 2026-10-16: Ein dauerhaft sichtbarer Start-Button im Ribbon-Kopf
+aktiviert die vorhandene Startseite (Tastatur: Alt+Home). Ein Interaktionstest prüft
+den Workspacewechsel und wiederholtes Betätigen. Der Skizzensolver liefert zusätzlich
+die IDs der in der letzten Iteration nicht erfüllten Bedingungen. Das ist eine
+Konvergenzdiagnose, noch kein mathematischer Nachweis eines minimalen Konfliktsatzes.
+Beim Entfernen einer Fixierbedingung wird der Fixierungszustand neu abgeleitet;
+ein Regressionstest prüft Konflikterkennung und anschließende Lösbarkeit.
+
 10derCAE untersucht, wie sich eine integrierte, native CAD/CAE-Umgebung mit
 Open-Source-Komponenten aufbauen lässt. Der Funktionsumfang soll parametrische
 Bauteilmodellierung, Baugruppen, Zeichnungen, FEM, Mehrkörpersimulation und

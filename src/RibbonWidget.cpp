@@ -47,6 +47,12 @@ void RibbonWidget::build() {
     m_fileButton->setObjectName(QStringLiteral("fileButton"));
     m_fileButton->setPopupMode(QToolButton::InstantPopup);
     m_headerLayout->addWidget(m_fileButton);
+    m_startButton = quickButton(QStringLiteral("view-home.svg"), {});
+    m_startButton->setObjectName(QStringLiteral("startButton"));
+    m_startButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    m_startButton->setShortcut(QKeySequence(QStringLiteral("Alt+Home")));
+    m_headerLayout->addWidget(m_startButton);
+    connect(m_startButton, &QToolButton::clicked, this, [this] { setWorkspace(WorkspaceId::Start); });
     m_undoButton = quickButton(QStringLiteral("edit-undo.svg"), {});
     m_redoButton = quickButton(QStringLiteral("edit-redo.svg"), {});
     m_headerLayout->addWidget(m_undoButton);
@@ -145,6 +151,8 @@ void RibbonWidget::buildFileMenu() {
 void RibbonWidget::retranslate() {
     auto& tr = I18n::instance();
     m_fileButton->setText(tr.text(QStringLiteral("file.menu")));
+    m_startButton->setText(tr.text(QStringLiteral("workspace.start")));
+    m_startButton->setToolTip(tr.text(QStringLiteral("workspace.start")) + QStringLiteral(" (Alt+Home)"));
     m_undoButton->setToolTip(tr.text(QStringLiteral("edit.undo")));
     m_redoButton->setToolTip(tr.text(QStringLiteral("edit.redo")));
     for (int i = 0; i < WorkspaceCatalog::all().size(); ++i)

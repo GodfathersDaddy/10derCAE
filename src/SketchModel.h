@@ -3,6 +3,7 @@
 #include <QJsonObject>
 #include <QPointF>
 #include <QString>
+#include <QStringList>
 #include <QVector>
 
 enum class SketchEntityType { Line, Circle, Arc };
@@ -36,6 +37,7 @@ struct SketchSolveResult {
     int degreesOfFreedom = 0;
     double maximumResidual = 0.0;
     QString message;
+    QStringList unsatisfiedConstraintIds;
 };
 
 class SketchModel {

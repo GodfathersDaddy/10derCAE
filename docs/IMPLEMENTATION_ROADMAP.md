@@ -17,6 +17,8 @@ Interaktionen geprüft sind.
 - [erledigt] Symmetrie zweier gleichartiger Geometrien an einer Konstruktionslinie
 - [erledigt] innere Tangentialität der Trägerkreise, Typprüfung und JSON-Roundtrip
 - [offen] Kontaktpunktprüfung innerhalb endlicher Bogenabschnitte
+- [erledigt] IDs nicht erfüllter Bedingungen und Aufheben von Fixierungen
+- [offen] minimaler Konfliktsatz und numerisch belastbare Freiheitsgradanalyse
 - Freiheitsgrad-, Unter-/Voll-/Überbestimmungsanzeige
 - [erledigt] Serialisierung und Solver-Regressionstests
 - [erledigt] geschlossene Profilprüfung und Extrusionsübergabe für Linien/Kreis
