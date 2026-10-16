@@ -6,7 +6,7 @@ The current CAD prototype additionally provides an interactive 2D sketch canvas 
 
 Development status and the next steps are maintained in [the roadmap](docs/IMPLEMENTATION_ROADMAP.md). Technical findings are recorded in [the dissertation journal](docs/DISSERTATION_LOG.md). This is a prototype; full Inventor feature parity is not yet achieved.
 
-Internal tangency applies to the supporting circles of circles/arcs. It preserves radii and arc sweeps while moving an unfixed curve. It does not yet ensure that the contact point lies inside both finite arc spans. Equal-radius internal tangency is rejected because coincident circles do not have a unique contact point.
+Internal tangency preserves radii and arc sweeps while moving an unfixed curve. After solving, internal/external curve tangency and line/arc tangency verify that the contact lies within each finite arc span, including endpoints and major arcs. Contacts outside a span are reported as unsatisfied constraints; automatic arc reorientation is not implemented. Lines retain infinite supporting-line semantics. Equal-radius internal tangency is rejected because coincident circles do not have a unique contact point.
 
 ## Build on Windows 11 x64
 

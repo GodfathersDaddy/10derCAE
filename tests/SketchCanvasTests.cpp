@@ -126,5 +126,20 @@ int main(int argc, char** argv) {
     if (!tangentCanvas.applyConstraint(SketchConstraintType::InternalTangent)) std::_Exit(14);
     if (std::abs(QLineF(tangentCanvas.model().entities()[0].first, tangentCanvas.model().entities()[1].first).length() - 6.0) > 1e-7)
         std::_Exit(15);
+    SketchModel invalidContact;
+    const QString leftArc = invalidContact.addArc({0, 10}, {-10, 0}, {0, -10});
+    const QString inner = invalidContact.addCircle({6, 0}, 4);
+    invalidContact.addConstraint(SketchConstraintType::Fixed, leftArc);
+    invalidContact.addConstraint(SketchConstraintType::Fixed, inner);
+    SketchCanvas contactCanvas;
+    contactCanvas.setModel(invalidContact);
+    bool conflictReported = false;
+    QObject::connect(&contactCanvas, &SketchCanvas::solveStateChanged,
+        [&](SketchSolveState state, int, const QString& message) {
+            conflictReported = state == SketchSolveState::OverConstrained && message.contains(QStringLiteral("constraint-"));
+        });
+    for (auto* item : contactCanvas.scene()->items())
+        if (!item->data(1).toString().isEmpty()) item->setSelected(true);
+    if (!contactCanvas.applyConstraint(SketchConstraintType::InternalTangent) || !conflictReported) std::_Exit(18);
     std::_Exit(0);
 }

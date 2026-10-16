@@ -162,5 +162,43 @@ int main() {
     if (!diagnostics.removeConstraint(lock) || diagnostics.entities()[0].fixed) return 34;
     const auto recovered = diagnostics.solve();
     if (recovered.state == SketchSolveState::OverConstrained || !recovered.unsatisfiedConstraintIds.isEmpty()) return 35;
+    // Supporting circles touch at x=10; the left outer semicircle excludes that point.
+    for (bool reverse : {false, true}) {
+        SketchModel finite;
+        const QString outer = reverse ? finite.addArc({0, -10}, {-10, 0}, {0, 10})
+            : finite.addArc({0, 10}, {-10, 0}, {0, -10});
+        const QString inner = finite.addCircle({6, 0}, 4);
+        finite.addConstraint(SketchConstraintType::Fixed, outer);
+        finite.addConstraint(SketchConstraintType::Fixed, inner);
+        const QString contact = finite.addConstraint(SketchConstraintType::InternalTangent, outer, inner);
+        const auto invalid = finite.solve();
+        if (invalid.state != SketchSolveState::OverConstrained || !invalid.unsatisfiedConstraintIds.contains(contact)) return 36;
+        QString error;
+        auto copy = SketchModel::fromJson(finite.toJson(), &error);
+        if (!error.isEmpty() || copy.solve().state != SketchSolveState::OverConstrained) return 37;
+    }
+    // Major arc crosses angle zero and contains the bottom contact; the minor top arc does not.
+    for (bool major : {false, true}) {
+        SketchModel finite;
+        const QString arc = major ? finite.addArc({10, 0}, {-10, 0}, {0, 10})
+            : finite.addArc({10, 0}, {7.071067811865, 7.071067811865}, {0, 10});
+        const QString line = finite.addLine({-20, -10}, {20, -10});
+        finite.addConstraint(SketchConstraintType::Fixed, arc);
+        finite.addConstraint(SketchConstraintType::Fixed, line);
+        finite.addConstraint(SketchConstraintType::Tangent, line, arc);
+        if ((finite.solve().state != SketchSolveState::OverConstrained) != major) return 38;
+    }
+    for (bool internal : {false, true}) for (bool swap : {false, true}) {
+        SketchModel finite;
+        const QString a = finite.addArc({0, 10}, {10, 0}, {0, -10});
+        const double x = internal ? 6.0 : 14.0;
+        const QString b = internal ? finite.addArc({x, 4}, {x + 4, 0}, {x, -4})
+            : finite.addArc({x, 4}, {x - 4, 0}, {x, -4});
+        finite.addConstraint(SketchConstraintType::Fixed, a);
+        finite.addConstraint(SketchConstraintType::Fixed, b);
+        finite.addConstraint(internal ? SketchConstraintType::InternalTangent : SketchConstraintType::Tangent,
+            swap ? b : a, swap ? a : b);
+        if (finite.solve().state == SketchSolveState::OverConstrained) return 39;
+    }
     return 0;
 }

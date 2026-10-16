@@ -83,6 +83,54 @@ void translateCurve(SketchEntity& entity, const QPointF& delta) {
     entity.first += delta; entity.second += delta;
     if (entity.type == SketchEntityType::Arc) entity.third += delta;
 }
+double positiveAngle(double value) {
+    value = std::fmod(value, 2.0 * M_PI);
+    return value < 0.0 ? value + 2.0 * M_PI : value;
+}
+// Distance to the closest arc endpoint if the circle contact falls outside its sweep.
+double arcContactResidual(const SketchEntity& entity, const QPointF& contact, double tolerance) {
+    if (entity.type != SketchEntityType::Arc) return 0.0;
+    QPointF center;
+    double radius = 0.0;
+    if (!circleData(entity, &center, &radius)) return 1.0;
+    if (QLineF(contact, entity.first).length() <= tolerance
+        || QLineF(contact, entity.third).length() <= tolerance) return 0.0;
+    const auto polar = [&center](const QPointF& p) { return std::atan2(p.y() - center.y(), p.x() - center.x()); };
+    const double start = polar(entity.first);
+    const double end = positiveAngle(polar(entity.third) - start);
+    const double through = positiveAngle(polar(entity.second) - start);
+    const double target = positiveAngle(polar(contact) - start);
+    const double angularTolerance = tolerance / std::max(radius, tolerance);
+    const bool inside = through <= end
+        ? target <= end + angularTolerance
+        : positiveAngle(start - polar(contact)) <= positiveAngle(start - polar(entity.third)) + angularTolerance;
+    return inside ? 0.0 : std::min(QLineF(contact, entity.first).length(), QLineF(contact, entity.third).length());
+}
+double tangentContactResidual(const SketchEntity& a, const SketchEntity& b,
+    SketchConstraintType type, double tolerance) {
+    const SketchEntity* line = a.type == SketchEntityType::Line ? &a : b.type == SketchEntityType::Line ? &b : nullptr;
+    if (line) {
+        const SketchEntity& curve = line == &a ? b : a;
+        QPointF center;
+        double radius = 0.0;
+        if (!circleData(curve, &center, &radius)) return 1.0;
+        const QPointF direction = line->second - line->first;
+        const double squared = QPointF::dotProduct(direction, direction);
+        if (squared <= tolerance * tolerance) return 1.0;
+        const QPointF contact = line->first + direction * (QPointF::dotProduct(center - line->first, direction) / squared);
+        return std::max(std::abs(QLineF(center, contact).length() - radius), arcContactResidual(curve, contact, tolerance));
+    }
+    QPointF centerA, centerB;
+    double radiusA = 0.0, radiusB = 0.0;
+    if (!circleData(a, &centerA, &radiusA) || !circleData(b, &centerB, &radiusB)) return 1.0;
+    const double distance = QLineF(centerA, centerB).length();
+    const bool internal = type == SketchConstraintType::InternalTangent;
+    if (distance <= tolerance || (internal && std::abs(radiusA - radiusB) <= tolerance)) return 1.0;
+    const QPointF direction = (centerB - centerA) / distance;
+    const double target = internal ? std::abs(radiusA - radiusB) : radiusA + radiusB;
+    const QPointF contact = centerA + direction * (internal && radiusA < radiusB ? -radiusA : radiusA);
+    return std::max({std::abs(distance - target), arcContactResidual(a, contact, tolerance), arcContactResidual(b, contact, tolerance)});
+}
 void setCurveRadius(SketchEntity& entity, double value) {
     if (entity.type == SketchEntityType::Circle) { entity.radius = value; return; }
     QPointF center; double current = 0.0;
@@ -334,6 +382,16 @@ SketchSolveResult SketchModel::solve(int maximumIterations, double tolerance) {
         }
         residual = iterationResidual;
         if (residual <= tolerance) break;
+    }
+    // Verify finite arc spans on the final geometry, after all projection steps.
+    for (const auto& constraint : m_constraints) {
+        if (constraint.type != SketchConstraintType::Tangent && constraint.type != SketchConstraintType::InternalTangent) continue;
+        const auto* a = findEntity(constraint.entityA);
+        const auto* b = findEntity(constraint.entityB);
+        if (!a || !b) continue;
+        const double contactResidual = tangentContactResidual(*a, *b, constraint.type, tolerance);
+        residual = std::max(residual, contactResidual);
+        if (contactResidual > tolerance && !unsatisfied.contains(constraint.id)) unsatisfied.push_back(constraint.id);
     }
     const int dof = estimateDegreesOfFreedom();
     SketchSolveResult result;

@@ -40,6 +40,18 @@ Qt-Selektionsreihenfolge keine unterschiedlichen gültigen Spiegelresultate erze
 
 ## Projektziel
 
+Kontaktpunktpruefung (2026-10-16): Nach den iterativen Projektionsschritten wird der
+geometrische Beruehrpunkt fuer aeussere/innere Kurventangentialitaet sowie Linie/Bogen
+bestimmt. Der Winkelbereich des Drei-Punkt-Bogens wird ueber seinen Zwischenpunkt
+ausgewaehlt; dadurch sind beide Umlaufrichtungen und Boegen ueber 180 Grad erfasst.
+Endpunkte gelten innerhalb der Laengentoleranz als enthalten. Kontakte ausserhalb
+des Bogens erscheinen mit ihrer Constraint-ID in der bestehenden Fehlerdiagnose.
+Eine automatische Drehung oder Aenderung des Bogenwinkels erfolgt nicht.
+Tests umfassen beide Referenzreihenfolgen, innere/aeussere Kontakte, ungueltige
+Trägerkreiskontakte, grosse/kleine Boegen, JSON-Roundtrip und das Canvas-Statussignal.
+Geraden behalten die Semantik einer unendlichen Traegergeraden. Die frueher in
+diesem Journal dokumentierte Beschraenkung auf Traegerkreise ist damit behoben.
+
 Entwicklung 2026-10-16: Ein dauerhaft sichtbarer Start-Button im Ribbon-Kopf
 aktiviert die vorhandene Startseite (Tastatur: Alt+Home). Ein Interaktionstest prüft
 den Workspacewechsel und wiederholtes Betätigen. Der Skizzensolver liefert zusätzlich

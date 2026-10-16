@@ -16,7 +16,8 @@ Interaktionen geprüft sind.
 - [erledigt] Bogenradius, Konzentrizität und äußere Tangentialität
 - [erledigt] Symmetrie zweier gleichartiger Geometrien an einer Konstruktionslinie
 - [erledigt] innere Tangentialität der Trägerkreise, Typprüfung und JSON-Roundtrip
-- [offen] Kontaktpunktprüfung innerhalb endlicher Bogenabschnitte
+- [erledigt] Kontaktpunktprüfung innerhalb endlicher Bogenabschnitte, inklusive Endpunkten und grossen Boegen
+- [offen] automatische Neuorientierung unfixierter Boegen fuer gueltigen Tangentialkontakt
 - [erledigt] IDs nicht erfüllter Bedingungen und Aufheben von Fixierungen
 - [offen] minimaler Konfliktsatz und numerisch belastbare Freiheitsgradanalyse
 - Freiheitsgrad-, Unter-/Voll-/Überbestimmungsanzeige
